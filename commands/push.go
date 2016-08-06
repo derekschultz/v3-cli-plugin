@@ -51,7 +51,7 @@ func Push(cliConnection plugin.CliConnection, args []string) {
 		fmt.Sprintf(`{"name":"%s", "relationships": { "space": {"guid":"%s"}}, %s}`, fc.Args()[1], mySpace.Guid, lifecycle))
 	FreakOut(err)
 	app := V3AppModel{}
-	err = json.Unmarshal([]byte(output[0]), &app)
+	err = json.Unmarshal([]byte(strings.Join(output, "")), &app)
 	FreakOut(err)
 	if app.Error_Code != "" {
 		FreakOut(errors.New("Error creating v3 app: " + app.Error_Code))
@@ -67,7 +67,7 @@ func Push(cliConnection plugin.CliConnection, args []string) {
 		output, err = cliConnection.CliCommandWithoutTerminalOutput("curl", fmt.Sprintf("/v3/apps/%s/packages", app.Guid), "-X", "POST", "-d", request)
 		FreakOut(err)
 
-		err = json.Unmarshal([]byte(output[0]), &pack)
+		err = json.Unmarshal([]byte(strings.Join(output, "")), &pack)
 		if err != nil {
 			FreakOut(errors.New("Error creating v3 app package: " + app.Error_Code))
 		}
@@ -76,7 +76,7 @@ func Push(cliConnection plugin.CliConnection, args []string) {
 		output, err = cliConnection.CliCommandWithoutTerminalOutput("curl", fmt.Sprintf("/v3/apps/%s/packages", app.Guid), "-X", "POST", "-d", "{\"type\": \"bits\"}")
 		FreakOut(err)
 
-		err = json.Unmarshal([]byte(output[0]), &pack)
+		err = json.Unmarshal([]byte(strings.Join(output, "")), &pack)
 		if err != nil {
 			FreakOut(errors.New("Error creating v3 app package: " + app.Error_Code))
 		}
@@ -105,7 +105,7 @@ func Push(cliConnection plugin.CliConnection, args []string) {
 	output, err = cliConnection.CliCommandWithoutTerminalOutput("curl", fmt.Sprintf("/v3/packages/%s/droplets", pack.Guid), "-X", "POST", "-d", "{}")
 	FreakOut(err)
 	droplet := V3DropletModel{}
-	err = json.Unmarshal([]byte(output[0]), &droplet)
+	err = json.Unmarshal([]byte(strings.Join(output, "")), &droplet)
 	if err != nil {
 		FreakOut(errors.New("error marshaling the v3 droplet: " + err.Error()))
 	}
@@ -124,7 +124,7 @@ func Push(cliConnection plugin.CliConnection, args []string) {
 		output, err = cliConnection.CliCommandWithoutTerminalOutput("curl", nextUrl)
 		FreakOut(err)
 		tmp := DomainsModel{}
-		err = json.Unmarshal([]byte(output[0]), &tmp)
+		err = json.Unmarshal([]byte(strings.Join(output, "")), &tmp)
 		FreakOut(err)
 		allDomains.Resources = append(allDomains.Resources, tmp.Resources...)
 
@@ -141,11 +141,11 @@ func Push(cliConnection plugin.CliConnection, args []string) {
 	if strings.Contains(output[0], "CF-RouteHostTaken") {
 		output, err = cliConnection.CliCommandWithoutTerminalOutput("curl", fmt.Sprintf("v2/routes?q=host:%s;domain_guid:%s", fc.Args()[1], domainGuid))
 		routes := RoutesModel{}
-		err = json.Unmarshal([]byte(output[0]), &routes)
+		err = json.Unmarshal([]byte(strings.Join(output, "")), &routes)
 		routeGuid = routes.Routes[0].Metadata.Guid
 	} else {
 		route := RouteModel{}
-		err = json.Unmarshal([]byte(output[0]), &route)
+		err = json.Unmarshal([]byte(strings.Join(output, "")), &route)
 		if err != nil {
 			FreakOut(errors.New("error unmarshaling the route: " + err.Error()))
 		}
@@ -154,7 +154,7 @@ func Push(cliConnection plugin.CliConnection, args []string) {
 
 	FreakOut(err)
 	route := RouteModel{}
-	err = json.Unmarshal([]byte(output[0]), &route)
+	err = json.Unmarshal([]byte(strings.Join(output, "")), &route)
 	if err != nil {
 		FreakOut(errors.New("error unmarshaling the route: " + err.Error()))
 	}
